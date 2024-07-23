@@ -5,7 +5,6 @@ from numpy import concatenate
 from numpy import linspace
 from numpy import where
 from scipy.io.wavfile import write
-import os, inspect
 
 start_time = time.time()
 
@@ -69,6 +68,9 @@ do   , dos   , reb   , re   , res   , mib   , mi   , fa   , fas   , solb   , sol
 Hdo  , Hdos  , Hreb  , Hre  , Hres  , Hmib  , Hmi  , Hfa  , Hfas  , Hsolb  , Hsol  , Hsols  , Hlab  , Hla  , Hlas  , Hsib  , Hsi   =   3,   4,   4,   5,   6,   6,   7,   8,   9,   9,  10,  11,  11,  12,  13,  13,  14
 HHdo , HHdos , HHreb , HHre , HHres , HHmib , HHmi , HHfa , HHfas , HHsolb , HHsol , HHsols , HHlab , HHla , HHlas , HHsib , HHsi  =  15,  16,  16,  17,  18,  18,  19,  20,  21,  21,  22,  23,  23,  24,  25,  25,  26
 notes = []
+TOTAL_TRACK_NUM: int
+TITLE: str
+SAMPLING_RATE = 44100
 
 #----CODE_SEPARATION
 
