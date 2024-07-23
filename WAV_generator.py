@@ -1,31 +1,30 @@
 import numpy as np
 import time
-from numpy import interp
-from numpy import concatenate
-from numpy import linspace
-from numpy import where
 from scipy.io.wavfile import write
 
 start_time = time.time()
 
+wave_library = { #Domain : [0, 1], Range : [-1, 1]
+    #Sine Wave
+    0 : (lambda x: np.sin(2 * np.pi * x)),
+    #Square Wave
+    1 : (lambda x: np.where(x <= 1/4, -1, np.where(x <= 3/4, 1, -1))),
+    #Sawtooth Wave
+    2 : (lambda x: 2*x - 1),
+    #Triangular Wave (Similar to Sine)
+    3 : (lambda x: 2 * np.abs(2*x - 1) - 1),
+    #White Noise, note[0] does nothing
+    4 : (lambda x: np.random.normal(0, 1, len(x))),
+    #White noise filtered with sine wave. percusion with some sound height
+    5 : (lambda x: np.sin(2 * np.pi * x) * np.random.normal(0, 1, len(x))),
+    #Some husky sound, and with S = -1 generate electric-themed sound
+    6 : (lambda x: np.interp(x, [0, 1/6, 2/6, 2/6, 3/6, 3/6, 4/6, 4/6, 5/6, 6/6], [-0.5, 0.5, -1, 1, -0.5, 0.75, -0.75, 0.75, -0.75, -0.5]))
+    }
+
 def wave_function(height, t):
     a = (BASIC_FREQ * 2**(height/12) * t) % 1
-    x = where(SIGMOID_NUMBER == 0, a, where(a != 0, 1 / (1 + ((1 - a)/a)**(SIGMOID_NUMBER + 1)), 0))
-    if WAVE_TYPE == 0: #sine_wave
-        result_wave = np.sin(2 * np.pi * x)
-    elif WAVE_TYPE == 1: #square_wave
-        result_wave = where(x <= 1/4, -1, where(x <= 3/4, 1, -1))
-    elif WAVE_TYPE == 2: #sawtooth wave
-        result_wave = 2*x - 1
-    elif WAVE_TYPE == 3: #triangular wave(similar to sine_wave)
-        result_wave = 2 * np.abs(2*x - 1) - 1
-    elif WAVE_TYPE == 4: #white noise, note[0] does nothing in frequency
-        result_wave = np.random.normal(0, 1, len(t))
-    elif WAVE_TYPE == 5: #white noise filtered with sine wave. percusion with some sound height
-        result_wave = np.sin(2 * np.pi * x) * np.random.normal(0, 1, len(t))
-    elif WAVE_TYPE == 6: #some husky sound, and with S = -1 generate electric-themed sound
-        result_wave = where(x < 1/6, -0.5+6*x, where(x < 2/6, 0.5 - 9*(x-1/6), where(x < 3/6, 1 - 9*(x-2/6), where(x < 4/6, 0.75-9*(x-3/6), where(x < 5/6, 0.75-9*(x-4/6), -0.75+1.5*(x-5/6))))))
-    return result_wave
+    x = np.where(SIGMOID_NUMBER == 0, a, np.where(a != 0, 1 / (1 + ((1 - a)/a)**(SIGMOID_NUMBER + 1)), 0))
+    return wave_library[WAVE_TYPE](x)
 
 class track:
     count = 0
@@ -36,13 +35,13 @@ class track:
         track.count += 1
 
     def concatenate(self, height, t, note_duration, note_length):
-        self.wave = concatenate((self.wave, VOLUME * wave_function(height, t) * interp(t / note_duration, INTERPOLATE_POINTS_X, INTERPOLATE_POINTS_Y)))
+        self.wave = np.concatenate((self.wave, VOLUME * wave_function(height, t) * np.interp(t / note_duration, INTERPOLATE_POINTS_X, INTERPOLATE_POINTS_Y)))
         self.length += note_length
 
     def ornament_note(self, height_ornament, height_main, t, ornament_ratio, note_duration, note_length):
-        self.wave = concatenate((self.wave, VOLUME * (wave_function(height_ornament, t) * where(t / note_duration < ornament_ratio, 1, 0)
-                                                    + wave_function(height_main, t)     * where(t / note_duration < ornament_ratio, 0, 1))
-                                    * interp(t / note_duration, INTERPOLATE_POINTS_X, INTERPOLATE_POINTS_Y)))
+        self.wave = np.concatenate((self.wave, VOLUME * (wave_function(height_ornament, t) * np.where(t / note_duration < ornament_ratio, 1, 0)
+                                                    + wave_function(height_main, t)     * np.where(t / note_duration < ornament_ratio, 0, 1))
+                                    * np.interp(t / note_duration, INTERPOLATE_POINTS_X, INTERPOLATE_POINTS_Y)))
         self.length += note_length
 
     def padding(self, location):
@@ -51,7 +50,7 @@ class track:
             self.length = location
 
     def restnote(self, restnote_length):
-        self.wave = concatenate((self.wave, np.zeros(restnote_length)))
+        self.wave = np.concatenate((self.wave, np.zeros(restnote_length)))
         self.length += restnote_length
 
 str_to_height = {"do" : -9, "do#" : -8, "dos" : -8, "reb" : -8,
@@ -68,7 +67,7 @@ SAMPLING_RATE: int
 
 #----CODE_SEPARATION
 
-tracks = []
+tracks: list[track] = []
 for i in range(TOTAL_TRACK_NUM):
     tracks.append(track())
 
@@ -86,13 +85,13 @@ for note in notes:
     if isinstance(note[0], (int, float)): #note[0] is height; note[1] is length
         note_duration = 240 * note[1] / BPM
         note_length = int(note_duration * SAMPLING_RATE)
-        t = linspace(0, note_duration, note_length ,endpoint=False)
+        t = np.linspace(0, note_duration, note_length ,endpoint=False)
         height = note[0]
         tracks[CURRENT_TRACK_NUM].concatenate(height, t, note_duration, note_length)
     elif len(note[0]) >= 2: #note[0] is height_str; note[1] is length; note[2] is octave (void is 0); height_str(note[0]) is "do", "re", "mi" and so on, prefixed with "H" to notate higher octave and "L" to lower octave, "la" notates BASIC_FREQ
         note_duration = 240 * note[1] / BPM
         note_length = int(note_duration * SAMPLING_RATE)
-        t = linspace(0, note_duration, note_length ,endpoint=False)
+        t = np.linspace(0, note_duration, note_length ,endpoint=False)
         height_str = note[0]
         height = 0
         while (height_str[0] == "H" or height_str[0] == "L"):
@@ -103,9 +102,9 @@ for note in notes:
     elif note[0] == "o": #note with ornament, ["o", "re", 1/16, "mi", 1/4] is note with length of the quarter note with ornament length is 1/16 of the length of the note (1/4 * 1/16 = 64th note)
         note_duration = 240 * note[4] / BPM
         note_length = int(note_duration * SAMPLING_RATE)
-        t = linspace(0, note_duration, note_length,endpoint=False)
+        t = np.linspace(0, note_duration, note_length,endpoint=False)
 
-        if str(type(note[1])) == "<class 'int'>" or str(type(note[1])) == "<class 'float'>":
+        if isinstance(note[1], (int, float)):
             height_ornament = note[1]
         else:
             height_str = note[1]
@@ -115,7 +114,7 @@ for note in notes:
                 height_str = height_str[1:]
             height_ornament += str_to_height[height_str] 
 
-        if str(type(note[3])) == "<class 'int'>" or str(type(note[3])) == "<class 'float'>":
+        if isinstance(note[3], (int, float)):
             height_main = note[3]
         else:
             height_str = note[3]
