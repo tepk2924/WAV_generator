@@ -64,7 +64,7 @@ oct_change = {"H" : 12, "L" : -12}
 notes = []
 TOTAL_TRACK_NUM: int
 TITLE: str
-SAMPLING_RATE = 44100
+SAMPLING_RATE: int
 
 #----CODE_SEPARATION
 
@@ -83,7 +83,7 @@ for i in range(DIV_NUM):
 
 for note in notes:
     iterations += 1
-    if str(type(note[0])) == "<class 'int'>" or str(type(note[0])) == "<class 'float'>": #note[0] is height; note[1] is length
+    if isinstance(note[0], (int, float)): #note[0] is height; note[1] is length
         note_duration = 240 * note[1] / BPM
         note_length = int(note_duration * SAMPLING_RATE)
         t = linspace(0, note_duration, note_length ,endpoint=False)
