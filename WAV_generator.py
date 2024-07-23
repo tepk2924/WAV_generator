@@ -61,12 +61,6 @@ str_to_height = {"do" : -9, "do#" : -8, "dos" : -8, "reb" : -8,
                  "lab" : -1, "la" : 0, "la#" : 1, "las" : 1, "sib" : 1, "si" : 2}
 oct_change = {"H" : 12, "L" : -12}
 
-LLLdo, LLLdos, LLLreb, LLLre, LLLres, LLLmib, LLLmi, LLLfa, LLLfas, LLLsolb, LLLsol, LLLsols, LLLlab, LLLla, LLLlas, LLLsib, LLLsi = -45, -44, -44, -43, -42, -42, -41, -40, -39, -39, -38, -37, -37, -36, -35, -35, -34
-LLdo , LLdos , LLreb , LLre , LLres , LLmib , LLmi , LLfa , LLfas , LLsolb , LLsol , LLsols , LLlab , LLla , LLlas , LLsib , LLsi  = -33, -32, -32, -31, -30, -30, -29, -28, -27, -27, -26, -25, -25, -24, -23, -23, -22
-Ldo  , Ldos  , Lreb  , Lre  , Lres  , Lmib  , Lmi  , Lfa  , Lfas  , Lsolb  , Lsol  , Lsols  , Llab  , Lla  , Llas  , Lsib  , Lsi   = -21, -20, -20, -19, -18, -18, -17, -16, -15, -15, -14, -13, -13, -12, -11, -11, -10
-do   , dos   , reb   , re   , res   , mib   , mi   , fa   , fas   , solb   , sol   , sols   , lab   , la   , las   , sib   , si    =  -9,  -8,  -8,  -7,  -6,  -6,  -5,  -4,  -3,  -3,  -2,  -1,  -1,   0,   1,   1,   2
-Hdo  , Hdos  , Hreb  , Hre  , Hres  , Hmib  , Hmi  , Hfa  , Hfas  , Hsolb  , Hsol  , Hsols  , Hlab  , Hla  , Hlas  , Hsib  , Hsi   =   3,   4,   4,   5,   6,   6,   7,   8,   9,   9,  10,  11,  11,  12,  13,  13,  14
-HHdo , HHdos , HHreb , HHre , HHres , HHmib , HHmi , HHfa , HHfas , HHsolb , HHsol , HHsols , HHlab , HHla , HHlas , HHsib , HHsi  =  15,  16,  16,  17,  18,  18,  19,  20,  21,  21,  22,  23,  23,  24,  25,  25,  26
 notes = []
 TOTAL_TRACK_NUM: int
 TITLE: str

@@ -1,8 +1,8 @@
 import os
 
-file = open("WAV_generator.py", mode = "r")
-code = file.read()
-file.close()
+generator_code_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "WAV_generator.py")
+with open(generator_code_file, "r") as f:
+    code = f.read()
 code_splited = code.split("#----CODE_SEPARATION\n")
 exec(code_splited[0])
 notes = []
@@ -24,6 +24,7 @@ INTERPOLATE_POINTS_X = [0,1/16,15/16,1]
 INTERPOLATE_POINTS_Y = [0,1,1,0] #those points are linearly interpolated, and the resulting function starting at 0 and ending at 1 is the filter applied each note. INT_X must be increasing sequence, 0 <= (each term in INT_Y) <= 1, can be changed with "i"
 TITLE = os.path.splitext(os.path.basename(__file__))[0]
 
+#Below, Code your awesome music tracks!
 def stc(height, length_note, length_entire):
     return [[height, length_note], ["r", length_entire - length_note]]
 
@@ -97,5 +98,7 @@ notes += [["l", 2]]
 notes += beep2
 notes += [["l", 3]]
 notes += beep2
+
+#Above, Code your awesome music tracks!
 
 exec(code_splited[1])
