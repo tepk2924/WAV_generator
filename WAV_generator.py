@@ -68,8 +68,13 @@ SAMPLING_RATE: int
 #----CODE_SEPARATION
 
 tracks: list[track] = []
-for i in range(TOTAL_TRACK_NUM):
-    tracks.append(track())
+try:
+    for i in range(TOTAL_TRACK_NUM):
+        tracks.append(track())
+except NameError:
+    print("This WAV_generator.py file should not be executed directly.")
+    print("Halting Program......")
+    exit(1)
 
 locations = np.zeros(256, dtype = int)
 

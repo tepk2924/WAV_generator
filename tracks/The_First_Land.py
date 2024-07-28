@@ -1,7 +1,6 @@
 import os
 
-generator_code_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "WAV_generator.py")
-with open(generator_code_file, "r") as f:
+with open("WAV_generator.py", "r") as f:
     code = f.read()
 code_splited = code.split("#----CODE_SEPARATION\n")
 exec(code_splited[0])
