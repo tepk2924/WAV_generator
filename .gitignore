@@ -2,4 +2,5 @@ test.py
 tracks/*
 !tracks/The_First_Land.py
 !tracks/Basic_Template.py
+!tracks/Manipulating.py
 *.wav
